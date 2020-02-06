@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Child Call</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+</head>
+
+<body class="home">
+  <div class="container">
+    <div class="columns">
+      <div class="column col-xs-12 col-sm-10 col-md-8 col-lg-6 col-3 col-mx-auto">
+        <h1 class="h2">{{title}}</h1>
+        <p class="text-gray">{{description}}</p>
+        <form>
+          <input type="text" name="name" id="name" class="d-hide">
+          <div class="form-group">
+            <label class="form-label" for="id">Enter Child ID:</label>
+            <div class="input-group">
+              <input class="form-input" type="text" name="id" id="id">
+              <button class="btn btn-primary input-group-btn" type="submit" id="submit">
+                Send to Screen
+              </button>
+            </div>
+            <p class="form-input-hint d-hide" id="hint"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    const domain = "https://{{domain}}/gun"
+    let domains = []
+
+    if (domain !== "https:///gun") {
+      domains.push(domain)
+    }
+
+    const gun = Gun(domains);
+
+    const form = document.querySelector("form")
+    const input = document.getElementById("id")
+    const honeypot = document.getElementById("name")
+    const submitButton = document.getElementById("submit")
+    const hint = document.getElementById("hint")
+
+    function clearInput() {
+      // reset states
+      input.value = ""
+      submitButton.disabled = false
+      form.classList.remove('has-success')
+      form.classList.remove('has-error')
+      input.classList.remove('is-success')
+      input.classList.remove('is-error')
+      hint.classList.remove('d-hide')
+      hint.innerText = ""
+      input.removeEventListener("input", clearInput)
+      input.removeEventListener("click", clearInput)
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (honeypot.value !== "") {
+        return false
+      }
+
+      submitButton.classList.add('loading')
+      submitButton.disabled = true
+
+      input.addEventListener("input", clearInput)
+      input.addEventListener("click", clearInput)
+
+      gun.get('child').put({
+        id: input.value
+      }, function (ack) {
+
+        hint.classList.remove('d-hide')
+        submitButton.classList.remove('loading')
+
+        if (ack.ok) {
+          // should have logic around setting the display:true on the other page, sending it back as a confirmation that it was received
+          // success
+          input.classList.add('is-success')
+          form.classList.add('has-success')
+          hint.innerText = "Success! This ID has been sent to the screen."
+        } else {
+          input.classList.add('is-error')
+          form.classList.add('has-error')
+          hint.innerText = "Error! Please refresh this page and try again. If the error persists, notify SunRidge staff."
+        }
+      })
+    });
+  </script>
+</body>
+
+</html>

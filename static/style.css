@@ -1,0 +1,49 @@
+.home .container {
+  padding-top: 15vw;
+}
+
+.display {
+  position: relative;
+  background: #000;
+  color: #aaa;
+  height: 100vh;
+  width: 100vw;
+}
+
+.display .id {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block;
+  text-align: center;
+  width: 100%;
+  font-weight: 700;
+  font-size: 20vw;
+}
+
+.fade {
+  opacity: 0;
+  animation: 60s linear fade;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* need fade animation
+*  perhaps construct the element in JS and add animation classname
+*/

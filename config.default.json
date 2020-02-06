@@ -1,0 +1,5 @@
+{
+  "title": "Child Call System",
+  "description": "Please use caution when using this system. Upon submitting a child ID, the ID will be sent to the screen in the other room.",
+  "port": 3000
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Child Call - Display</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+</head>
+
+<body class="display">
+  <span class="id"></span>
+  <script>
+    const domain = "https://{{domain}}/gun"
+    let domains = []
+
+    if (domain !== "https:///gun") {
+      domains.push(domain)
+    }
+
+    const gun = Gun(domains);
+
+    gun.get('child').on(function (data) {
+      document.getElementsByClassName('id')[0].remove()
+
+      let id = document.createElement("span")
+      id.classList.add('id')
+      id.classList.add('fade')
+      id.innerText = data.id !== undefined ? data.id : ""
+
+      document.body.appendChild(id)
+    }, true);
+  </script>
+</body>
+
+</html>
