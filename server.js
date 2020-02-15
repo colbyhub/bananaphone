@@ -5,8 +5,8 @@ const Gun = require("gun");
 const app = express();
 
 const config = {
-  user: JSON.parse(fs.readFileSync("./config.json")),
-  default: JSON.parse(fs.readFileSync("./config.default.json"))
+  user: JSON.parse(fs.readFileSync(__dirname + "/config.json")),
+  default: JSON.parse(fs.readFileSync(__dirname + "/config.default.json"))
 };
 const port = config.user.port || config.default.port;
 const domain = config.user.domain || config.default.domain;
