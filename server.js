@@ -13,7 +13,7 @@ const domain = config.user.domain || config.default.domain;
 
 app.engine("mustache", mustacheExpress());
 
-app.use(Gun.serve, express.static("static"));
+app.use(Gun.serve, express.static(__dirname + "/static"));
 app.set("view engine", "mustache");
 app.set("views", __dirname + "/views");
 
