@@ -3,13 +3,19 @@ const express = require("express");
 const mustacheExpress = require("mustache-express");
 const Gun = require("gun");
 const app = express();
+const basicAuth = require("express-basic-auth");
 
 const config = {
   user: JSON.parse(fs.readFileSync(__dirname + "/config.json")),
   default: JSON.parse(fs.readFileSync(__dirname + "/config.default.json"))
 };
-const port = config.user.port || config.default.port;
-const domain = config.user.domain || config.default.domain;
+const getConfig = value => {
+  return config.user[value] !== undefined
+    ? config.user[value]
+    : config.default[value];
+};
+const port = getConfig("port");
+const domain = getConfig("domain");
 
 app.engine("mustache", mustacheExpress());
 
@@ -17,14 +23,23 @@ app.use(Gun.serve, express.static(__dirname + "/static"));
 app.set("view engine", "mustache");
 app.set("views", __dirname + "/views");
 
-app.get("/", (_req, res) => {
-  res.render("index", {
-    title: config.user.title || config.default.title,
-    description: config.user.description || config.default.description,
-    domain: domain,
-    port: port
-  });
-});
+app.get(
+  "/",
+  basicAuth({
+    challenge: true,
+    users: {
+      [getConfig("username")]: getConfig("password")
+    }
+  }),
+  (_req, res) => {
+    res.render("index", {
+      title: getConfig("title"),
+      description: getConfig("description"),
+      domain: domain,
+      port: port
+    });
+  }
+);
 
 app.get("/display", (_req, res) => {
   res.render("display", { domain: domain, port: port });
