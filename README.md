@@ -28,8 +28,6 @@ Next, you **must** add a `config.json` file to the root of your project. You may
 
 Now, you may run `npm start` from your terminal inside of the directory, and navigate to `http://localhost:3000`! The username and password are both `admin` by default.
 
----
-
 There are two pages available:
 * `/` - homepage with the input box
 * `/display` - page that displays the code entered
@@ -41,3 +39,4 @@ There are two pages available:
 * Use a better template engine like Nunjucks
 * Possibly adopt a frontend framework like Elm
 * Write a comprehensive guide on how to install and run on a Pi
+* Easier configuration
