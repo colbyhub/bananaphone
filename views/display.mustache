@@ -12,31 +12,26 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 </head>
 
 <body class="display">
   <span class="id"></span>
   <script>
-    const domain = "http://{{domain}}/gun"
-    let domains = []
-
-    if (domain !== "http:///gun") {
-      domains.push(domain)
-    }
-
-    const gun = Gun(domains);
-
-    gun.get('child').on(function (data) {
+    const socket = io(window.location.origin);
+    
+    socket.on('code', function(msg) {
       document.getElementsByClassName('id')[0].remove()
 
       let id = document.createElement("span")
       id.classList.add('id')
       id.classList.add('fade')
-      id.innerText = data.id !== undefined ? data.id : ""
+      id.innerText = msg !== undefined ? msg : ""
 
       document.body.appendChild(id)
-    }, true);
+
+      socket.emit('displayed', msg)
+    });
   </script>
 </body>
 

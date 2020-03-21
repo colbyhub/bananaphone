@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
   <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 </head>
 
 <body class="home">
@@ -39,14 +39,7 @@
     </div>
   </div>
   <script>
-    const domain = "http://{{domain}}/gun"
-    let domains = []
-
-    if (domain !== "http:///gun") {
-      domains.push(domain)
-    }
-
-    const gun = Gun(domains);
+    const socket = io(window.location.origin);
 
     const form = document.querySelector("form")
     const input = document.getElementById("id")
@@ -68,6 +61,16 @@
       input.removeEventListener("click", clearInput)
     }
 
+    function removeLoadingState() {
+      hint.classList.remove('d-hide')
+      submitButton.classList.remove('loading')
+    }
+
+    function addErrorState() {
+      input.classList.add('is-error')
+      form.classList.add('has-error')
+    }
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -81,25 +84,27 @@
       input.addEventListener("input", clearInput)
       input.addEventListener("click", clearInput)
 
-      gun.get('child').put({
-        id: input.value
-      }, function (ack) {
+      socket.emit("code", input.value);
+    });
 
-        hint.classList.remove('d-hide')
-        submitButton.classList.remove('loading')
+    socket.on('displayed', function(ok) {
+      removeLoadingState()
+      input.classList.add('is-success')
+      form.classList.add('has-success')
+      hint.innerText = "Success! This ID has been sent to the screen."
+    })
 
-        if (ack.ok) {
-          // should have logic around setting the display:true on the other page, sending it back as a confirmation that it was received
-          // success
-          input.classList.add('is-success')
-          form.classList.add('has-success')
-          hint.innerText = "Success! This ID has been sent to the screen."
-        } else {
-          input.classList.add('is-error')
-          form.classList.add('has-error')
-          hint.innerText = "Error! Please refresh this page and try again. If the error persists, notify SunRidge staff."
-        }
-      })
+    socket.on('error', function(msg) {
+      removeLoadingState()
+      addErrorState()
+      hint.innerText = `Error: ${msg}! Please refresh this page and try again. If the error persists, notify staff.`
+    })
+
+    socket.on('disconnect', (reason) => {
+      clearInput()
+      removeLoadingState()
+      addErrorState()
+      hint.innerText = `You have been disconnected: ${reason}. Please refresh this page and ensure the system is powered on. If the error persists, notify staff.`
     });
   </script>
 </body>

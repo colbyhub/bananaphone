@@ -1,8 +1,9 @@
 const fs = require("fs");
 const express = require("express");
 const mustacheExpress = require("mustache-express");
-const Gun = require("gun");
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
 const basicAuth = require("express-basic-auth");
 
 const config = {
@@ -15,11 +16,15 @@ const getConfig = value => {
     : config.default[value];
 };
 const port = getConfig("port");
-const domain = getConfig("domain");
+const getDateTime = () => {
+  return {
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString()
+  };
+};
 
 app.engine("mustache", mustacheExpress());
-
-app.use(Gun.serve, express.static(__dirname + "/static"));
+app.use(express.static(__dirname + "/static"));
 app.set("view engine", "mustache");
 app.set("views", __dirname + "/views");
 
@@ -34,18 +39,32 @@ app.get(
   (_req, res) => {
     res.render("index", {
       title: getConfig("title"),
-      description: getConfig("description"),
-      domain: domain,
-      port: port
+      description: getConfig("description")
     });
   }
 );
 
 app.get("/display", (_req, res) => {
-  res.render("display", { domain: domain, port: port });
+  res.render("display");
 });
 
-const server = app.listen(port, () =>
-  console.log(`🍌 running on port ${port}!`)
-);
-Gun({ web: server });
+io.on("connection", socket => {
+  socket.on("code", msg => {
+    console.log(
+      `${getDateTime().date} ${
+        getDateTime().time
+      } [submission] code submitted: ${msg}`
+    );
+    io.emit("code", msg);
+  });
+  socket.on("displayed", msg => {
+    console.log(
+      `${getDateTime().date} ${
+        getDateTime().time
+      } [receipt] code displayed: ${msg}`
+    );
+    io.emit("displayed", msg);
+  });
+});
+
+server.listen(port, () => console.log(`🍌 running on port ${port}!`));
