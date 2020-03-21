@@ -5,7 +5,7 @@ Bananaphone is a DIY paging system for your small business or organization, inte
 * Lightweight (runs easily on a Rasperry Pi Zero W)!
 * Node w/ [Express.js](https://github.com/expressjs/express) server
 * Handlebar templates
-* [GUN](https://github.com/amark/gun) pub/sub
+* [Socket.io](https://github.com/socketio/socket.io) pub/sub
 * User-friendly
 * Easy to setup
 * Basic authentication to prevent hooligans
@@ -35,8 +35,8 @@ There are two pages available:
 ---
 
 ## Roadmap
-* Replace GUN with websockets
-* Use a better template engine like Nunjucks
-* Possibly adopt a frontend framework like Elm
-* Write a comprehensive guide on how to install and run on a Pi
-* Easier configuration
+- [x] Replace GUN with Socket.io
+- [ ] Use a better template engine like Nunjucks
+- [ ] Possibly adopt a frontend framework like Elm
+- [ ] Write a comprehensive guide on how to install and run on a Pi
+- [ ] Easier configuration
